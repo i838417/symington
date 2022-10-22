@@ -193,8 +193,7 @@ async function processUploadedDataGrape(jsonData)
         oProduceEvent.properties[0].value = attrProductType;
         oProduceEvent.properties[1].value = getDate(attrHarvestDate);
         oProduceEvent.creationDate        = getCurrentDate();
-        oProduceEvent.quantities[0].value = attrWeight.toString();
-//        oProduceEvent.plant               = retrieveAttributeData(rec, "Vineyard_Farm", attrVineyardFarm , null, "");
+        oProduceEvent.quantities[0].value = attrWeight;
         oProduceEvent.batchId             = attrBatchNumber;
         oProduceEvent.productName         = attrProductName;
         
@@ -240,8 +239,7 @@ async function processUploadedDataWine(jsonData)
         oProduceEvent.properties[0].value = getDate(attrStartFermentation);
         oProduceEvent.properties[1].value = getDate(attrEndFermentation);
         oProduceEvent.creationDate        = getCurrentDate();
-        oProduceEvent.quantities[0].value = attrQuantity.toString();
-//        oProduceEvent.plant               = retrieveAttributeData(rec, "Vineyard_Farm", attrVineyardFarm , null, "");
+        oProduceEvent.quantities[0].value = attrQuantity;
         oProduceEvent.batchId             = attrBatchNumber;
         oProduceEvent.productName         = attrProductName;
 
@@ -293,8 +291,8 @@ async function processUploadedDataFinalBottle(jsonData)
         let attrWineBatchNumber     = getAttribute(rec, "Wine_Batch_No" , true, "" );
         let attrWineProductID     = getAttribute(rec, "Wine_Product_ID" , true, "" );
 
-        let attrGlassBatchNumber     = getAttribute(rec, "Glass_Batch_No" , true, "" );
-        let attrGlassProductID     = getAttribute(rec, "Glass_Product_ID" , true, "" );
+        let attrBottleBatchNumber     = getAttribute(rec, "Bottle_Batch_No" , true, "" );
+        let attrBottleProductID     = getAttribute(rec, "Bottle_Product_ID" , true, "" );
 
         let attrCorkBatchNumber     = getAttribute(rec, "Cork_Batch_No" , true, "" );
         let attrCorkProductID     = getAttribute(rec, "Cork_Product_ID" , true, "" );
@@ -313,16 +311,15 @@ async function processUploadedDataFinalBottle(jsonData)
         let oProduceEvent = new productEvent(FINALBOTTLE);
 
         oProduceEvent.productId           = attrProductID;
-        oProduceEvent.properties[0].value = attrBottlesInBatch.toString();
+        oProduceEvent.properties[0].value = attrBottlesInBatch;
         oProduceEvent.properties[1].value = getDate(attrBottlingDate);
         oProduceEvent.creationDate        = getCurrentDate();
-//        oProduceEvent.plant               = retrieveAttributeData(rec, "Vineyard_Farm", attrVineyardFarm , null, "");
         oProduceEvent.batchId             = attrBatchNumber;
         oProduceEvent.productName         = attrProductName;
 
         let oComponent = new component();
-        oComponent.batchId = attrGrapeBatchNumber;
-        oComponent.productId = attrGrapeProductID;
+        oComponent.batchId = attrWineBatchNumber;
+        oComponent.productId = attrWineProductID;
         
         if(oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.produceEvents.length > 0)
         {
@@ -358,9 +355,15 @@ function getAttribute(attrs, attrName, isRequired, defaultValue)
         throw new Error("Missing column '" + columnName + "'");;
     }
     let attrValue = attrs[attrName];
+
+    if(typeof attrValue == "number") 
+    {
+        attrValue = attrValue.toString();
+    }
+
     if (typeof attrValue === "string")
     {
-        if (isRequired && attrs[attrName].trim() == "")
+        if (isRequired && attrValue.trim() == "")
         {
             throw new Error("Missing mandatory data in column '" + columnName + "'");
         }
@@ -434,38 +437,39 @@ function finalPayload(){
     return oFinalPayload;
 }
 
-function getSystemId(){
-    let sCompanyName = process.env.COMPANY_NAME;
-    let sSystemId = "SYS-" +sCompanyName;
-}
-
 function getCompanyName(){
     let sCompanyName = process.env.COMPANY_NAME;
     return sCompanyName;
 }
 
-function productEvent(product){
+function productEvent(product)
+{
     let produceEventJson;
     let oProduceEvent;
 
     if(product == "Grape")
     {
-        let produceEventJson = require('../payload_json/product-event-grape.json');
-        let oProduceEvent = JSON.parse(JSON.stringify(produceEventJson));
-    } else if (product == "Wine") 
+        produceEventJson = require('../payload_json/product-event-grape.json');     
+    } 
+    else if (product == "Wine") 
     {
         produceEventJson = require('../payload_json/product-event-wine.json');
-        oProduceEvent = JSON.parse(JSON.stringify(produceEventJson));
-    } else if (product == "Final Bottle") {
+    } 
+    else if (product == "Final Bottle") 
+    {
+        produceEventJson = require('../payload_json/product-event-final-bottle.json');
+    } 
+    else if (product == "Cork") 
+    {
 
-    } else if (product == "Cork") {
-
-    } else if (product == "Bottle") {
+    } else if (product == "Bottle") 
+    {
 
     } else {
         //error
         console.log("error");
     }
+    oProduceEvent = JSON.parse(JSON.stringify(produceEventJson));
     return oProduceEvent;
 }
 
@@ -485,7 +489,7 @@ async function postMTPayload(finalPayload) {
 
     try{
 //debugger
-//        const responseData = await eventDataApi.EventDataApi.create(finalPayload).execute({ destinationName: 'DEST-MT-V2' });
+        const responseData = await eventDataApi.EventDataApi.create(finalPayload).execute({ destinationName: 'DEST-MT-V2' });
 
     } catch (err) {
 

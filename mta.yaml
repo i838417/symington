@@ -17,6 +17,7 @@ modules:
           name: srv
           url: ~{url}
           forwardAuthToken: true
+          timeout: 600000
 
   - name: app-srv
     type: nodejs

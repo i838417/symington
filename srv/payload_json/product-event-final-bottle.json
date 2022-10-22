@@ -1,0 +1,22 @@
+{
+    "productId": "",
+    "systemId": "SYS-SYMINGTON",
+    "properties": [
+        {
+            "name": "BOTTLES_IN_BATCH",
+            "value": ""
+        },
+        {
+            "name": "BOTTLING_DATE",
+            "value": ""
+        }
+    ],
+    "creationDate": "",
+    "location": "PT",
+    "status": "RELEASED",
+    "plant": "",
+    "batchId": "",
+    "productName": "",
+    "components": [
+    ]
+}
