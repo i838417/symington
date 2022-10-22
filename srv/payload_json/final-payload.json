@@ -1,0 +1,12 @@
+{
+    "PostMaterialTraceabilityEventNotification": {
+        "senderLbnId": "10010003797",
+        "senderSystemId": "10010003797-SYS",
+        "messageId": "ae8f5352-7471-468f-9422-bde55523646b",
+        "eventPackage": {
+			"receiveEvents": [],
+            "produceEvents": [],
+            "DeliverEvent": []
+        }
+    }
+}

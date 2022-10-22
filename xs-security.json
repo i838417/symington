@@ -1,0 +1,28 @@
+{
+    "xsappname": "app",
+    "tenant-mode": "dedicated",
+    "scopes": [
+        {
+            "name": "$XSAPPNAME.MTUploadAppUser",
+            "description": "MTUploadAppUser"
+        }
+    ],
+    "role-templates": [
+        {
+            "name": "MTUploadAppUser",
+            "description": "MTUploadAppUser",
+            "scope-references": [
+                "$XSAPPNAME.MTUploadAppUser"
+            ]
+        }
+    ],
+    "role-collections": [
+        {
+            "name": "RC_MTUploadAppUser",
+            "description": "Role Collection MTUploadAppUser",
+            "role-template-references": [
+                "$XSAPPNAME.MTUploadAppUser"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,51 @@
+<mvc:View controllerName="myapp.controller.Upload"
+    class="sapUiSizeCompact"
+    displayBlock="true"
+    xmlns:l="sap.ui.layout"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:u="sap.ui.unified"
+    xmlns="sap.m">
+    <Shell id="shell" appWidthLimited="false">
+		<App id="app">
+			<pages>
+				<Page id="page" title="{i18n>title}">
+					<content>
+                        <IconTabBar id="iconTabBar" expanded="true" class="sapUiResponsiveContentPadding">
+                            <items>
+                                <IconTabFilter icon="sap-icon://upload" text="{i18n>upload.IconTab.Text}" key="Upload">
+                                    <Panel headerText="{i18n>upload.Panel.HeaderText}" width="auto" class="sapUiResponsiveMargin">
+                                        <l:VerticalLayout class="sapUiLargeMarginBegin">
+                                            <Text text="{i18n>upload.Instruction.1.Text}" class="sapUiSmallMargintop" visible="false"/>
+                                            <Text text="{i18n>upload.Instruction.2.Text}" visible="false"/>
+                                            <Text text="{i18n>upload.Instruction.3.Text}" visible="false"/>
+                                            <ComboBox id="product"  width="17.2rem" selectedKey="GRAPE" enabled="true" >
+                                                <items>
+                                                    <core:Item xmlns:core="sap.ui.core" key="GRAPE" text="Grape" id="grape"/>
+                                                    <core:Item xmlns:core="sap.ui.core" key="WINE" text="Wine" id="wine"/>
+                                                    <core:Item xmlns:core="sap.ui.core" key="FINAL_BOTTLE" text="Final Bottle" id="final_bottle"/>
+                                                </items>
+                                            </ComboBox>  
+                                            <u:FileUploader id="fileUploader" name="fileUpload" tooltip="{i18n>upload.FileUploader.Tooltip}" icon="sap-icon://browse-folder" style="Emphasized" fileType = "csv,xlsx" placeholder="{i18n>upload.FileUploader.PlaceHolder}" uploadComplete="onUploadComplete"/>
+                                            <Button id="uploadButton" text="{i18n>upload.Button.Text}" icon="sap-icon://upload" type="Emphasized" press="onPressUpload"/>
+                                            <MessageStrip text="{i18n>upload.MessageStrip.Text}" showIcon="true" class="sapUiSmallMarginTop"></MessageStrip>
+                                        </l:VerticalLayout>
+                                    </Panel>
+                                </IconTabFilter>
+                                <IconTabFilter icon="sap-icon://download" text="{i18n>download.IconTab.Text}" key="download">
+                                    <Panel headerText="{i18n>download.Panel.HeaderText}" width="auto" class="sapUiResponsiveMargin">
+                                        <l:VerticalLayout class="sapUiLargeMarginBegin">
+                                            <Text text="{i18n>download.Instruction.Excel.Text}" class="sapUiSmallMarginTop sapUitinyMargin"/>
+                                            <Button id="downloadExcelButton" text="{i18n>download.Button.Excel.Text}" icon="sap-icon://download" type="Default" class="sapUiSmallMarginBottom sapUitinyMargin" press="onPressDownloadExcel"/>
+                                            <Text text="{i18n>download.Instruction.Csv.Text}" class="sapUitinyMargin"/>
+                                            <Button id="downloadCsvButton" text="{i18n>download.Button.Csv.Text}" icon="sap-icon://download" type="Default" class="sapUitinyMargin" press="onPressDownloadCsv"/>
+                                        </l:VerticalLayout>
+                                    </Panel>
+                                </IconTabFilter>
+                            </items>
+                        </IconTabBar>
+                    </content>
+				</Page>
+			</pages>
+		</App>
+	</Shell>
+</mvc:View>

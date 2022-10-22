@@ -1,0 +1,10 @@
+{
+    "dependencies": {
+        "@sap/approuter": "^6",
+        "@sap/node-jwt": "^1.6.16",
+        "tough-cookie": "^4.1.2"
+    },
+    "scripts": {
+        "start": "node node_modules/@sap/approuter/approuter.js"
+    }
+}

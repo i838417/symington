@@ -1,0 +1,3 @@
+Assemble_To,Manufacturer,Product_ID,Product_Name,Serial_Number,Batch_Number,CatenaX_UUID,Country_Code,AAS,MQTT,Batch_Managed
+,<Manufacturer>,<Product ID>,<Product Name>,<Serial Number>,<Batch Number>,<UUID>,<Country Code>,<Y or N>,<Y or N>,<Y or N>
+<Serial Number or Batch Number>,<Sub Component Manufacturer>,<Sub Component ID>,<Sub Component Name>,<Serial Number>,<Batch Number>,<UUID>,<Country Code>,<Y or N>,<Y or N>,<Y or N>

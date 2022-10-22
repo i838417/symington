@@ -1,0 +1,27 @@
+{
+    "productId": "",
+    "systemId": "SYS-SYMINGTON",
+    "properties": [
+        {
+            "name": "GRAPE_TYPE",
+            "value": ""
+        },
+        {
+            "name": "HARVEST_DATE",
+            "value": ""
+        }
+    ],
+    "creationDate": "",
+    "location": "PT",
+    "status": "RELEASED",
+    "quantities": [
+        {
+            "qualifier": "BASE_UNIT",
+            "value": "",
+            "unit": "kg"
+        }
+    ],
+    "plant": "",
+    "batchId": "",
+    "productName": ""
+}

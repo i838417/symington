@@ -1,0 +1,29 @@
+{
+    "productId": "",
+    "systemId": "SYS-SYMINGTON",
+    "properties": [
+        {
+            "name": "START_FERMENTATION",
+            "value": ""
+        },
+        {
+            "name": "END_FERMENTATION",
+            "value": ""
+        }
+    ],
+    "creationDate": "",
+    "location": "PT",
+    "status": "RELEASED",
+    "quantities": [
+        {
+            "qualifier": "BASE_UNIT",
+            "value": "",
+            "unit": "ml"
+        }
+    ],
+    "plant": "",
+    "batchId": "",
+    "productName": "",
+    "components": [
+    ]
+}

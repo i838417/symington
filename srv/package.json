@@ -1,0 +1,29 @@
+{
+    "name": "MTUploadService",
+    "engines": {
+        "node": "^14"
+    },
+    "dependencies": {
+        "@sap-cloud-sdk/core": "^1.54.2",
+        "@sap-cloud-sdk/openapi-generator": "^2.9.0",
+        "@sap/xsenv": "^3.1.0",
+        "@sap/xssec": "^3.2.2",
+        "axios": "^0.21.1",
+        "body-parser": "^1.19.0",
+        "cfenv": "^1.2.4",
+        "csvtojson": "^2.0.10",
+        "express": "^4.17.1",
+        "formidable": "^1.2.2",
+        "fs-extra": "^10.1.0",
+        "passport": "^0.4.1",
+        "path": "^0.12.7",
+        "request": "^2.88.2",
+        "sap-cf-axios": "^0.3.6",
+        "uuid": "^8.3.2",
+        "winston": "^3.3.3",
+        "xlsx": "^0.18.5"
+    },
+    "scripts": {
+        "start": "node MTUploadService.js"
+    }
+}
