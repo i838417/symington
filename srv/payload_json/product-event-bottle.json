@@ -1,0 +1,16 @@
+{
+    "productId": "",
+    "systemId": "SYS-BAGLASS",
+    "properties": [
+        {
+            "name": "BOTTLE_TYPE",
+            "value": ""
+        }
+    ],
+    "creationDate": "",
+    "location": "PT",
+    "status": "RELEASED",
+    "plant": "",
+    "batchId": "",
+    "productName": ""
+}

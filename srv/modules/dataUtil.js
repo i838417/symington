@@ -19,6 +19,8 @@ const BAGLASS = "BA Glass";
 const GRAPE = "Grape";
 const WINE = "Wine";
 const FINALBOTTLE = "Final Bottle";
+const CORK = "Cork";
+const BOTTLE = "Bottle";
 
 
 //====================================================================================================
@@ -33,8 +35,8 @@ module.exports = {
 //====================================================================================================
 //  ----- MODULE FUNCTIONS (EXPORTS) -----
 //====================================================================================================
-async function doUpload(app, req, res) {
-
+async function doUpload(app, req, res) 
+{
     const logger = app.get('logger');
     logger.info(`Starting data uploading....`);
 
@@ -188,14 +190,10 @@ async function processUploadedDataGrape(jsonData)
             throw error;
         }
 */
-        let oProduceEvent = new productEvent(GRAPE);
-        oProduceEvent.productId           = attrProductID;
+        let oProduceEvent = new productEvent(GRAPE, attrProductID, attrBatchNumber, attrProductName);
         oProduceEvent.properties[0].value = attrProductType;
         oProduceEvent.properties[1].value = getDate(attrHarvestDate);
-        oProduceEvent.creationDate        = getCurrentDate();
         oProduceEvent.quantities[0].value = attrWeight;
-        oProduceEvent.batchId             = attrBatchNumber;
-        oProduceEvent.productName         = attrProductName;
         
         oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.produceEvents.push(oProduceEvent);
 
@@ -233,41 +231,13 @@ async function processUploadedDataWine(jsonData)
             throw error;
         }
 */
-        let oProduceEvent = new productEvent(WINE);
-
-        oProduceEvent.productId           = attrProductID;
+        let oProduceEvent = new productEvent(WINE, attrProductID, attrBatchNumber, attrProductName);
         oProduceEvent.properties[0].value = getDate(attrStartFermentation);
         oProduceEvent.properties[1].value = getDate(attrEndFermentation);
-        oProduceEvent.creationDate        = getCurrentDate();
         oProduceEvent.quantities[0].value = attrQuantity;
-        oProduceEvent.batchId             = attrBatchNumber;
-        oProduceEvent.productName         = attrProductName;
 
-        let oComponent = new component();
-        oComponent.batchId = attrGrapeBatchNumber;
-        oComponent.productId = attrGrapeProductID;
-        
-        if(oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.produceEvents.length > 0)
-        {
-            let isProduceExit = false;
-
-            oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.produceEvents.forEach(oProduceEvent => {
-                if(oProduceEvent.productId == attrProductID && oProduceEvent.batchId == attrBatchNumber){
-                    oProduceEvent.components.push(oComponent);
-                    isProduceExit = true;
-                }
-            });
-
-            if(!isProduceExit)
-            {
-                oProduceEvent.components.push(oComponent);
-                oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.produceEvents.push(oProduceEvent);
-            }
-        } else {
-            oProduceEvent.components.push(oComponent);
-            oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.produceEvents.push(oProduceEvent);
-        }
-        
+        addComponent(attrBatchNumber, attrProductID, attrGrapeBatchNumber, attrGrapeProductID, oProduceEvent, oFinalPayload, GRAPE);
+      
     });
     
     postMTPayload(oFinalPayload);
@@ -276,11 +246,10 @@ async function processUploadedDataWine(jsonData)
 //====================================================================================================
 async function processUploadedDataFinalBottle(jsonData) 
 {
-    
     let oFinalPayload = new finalPayload();
 
-    jsonData.forEach(rec => {
-        
+    jsonData.forEach(rec => {        
+
         let attrProductID       = getAttribute(rec, "Product_ID" , true , "" ); 
         let attrBottlesInBatch     = getAttribute(rec, "Bottles_In_Batch", false, "" ); 
         let attrBottlingDate     = getAttribute(rec, "Bottling_Date", false, "" ); 
@@ -308,40 +277,92 @@ async function processUploadedDataFinalBottle(jsonData)
             throw error;
         }
 */
-        let oProduceEvent = new productEvent(FINALBOTTLE);
-
-        oProduceEvent.productId           = attrProductID;
+        let oProduceEvent = new productEvent(FINALBOTTLE, attrProductID, attrBatchNumber, attrProductName);
         oProduceEvent.properties[0].value = attrBottlesInBatch;
         oProduceEvent.properties[1].value = getDate(attrBottlingDate);
-        oProduceEvent.creationDate        = getCurrentDate();
-        oProduceEvent.batchId             = attrBatchNumber;
-        oProduceEvent.productName         = attrProductName;
 
-        let oComponent = new component();
-        oComponent.batchId = attrWineBatchNumber;
-        oComponent.productId = attrWineProductID;
+        addComponent(attrBatchNumber, attrProductID, attrWineBatchNumber, attrWineProductID, oProduceEvent, oFinalPayload, WINE);
+
+        addReceiveEvent(attrBatchNumber, attrProductID, attrCorkBatchNumber, attrCorkProductID, oFinalPayload, CORK);
+        addComponent(attrBatchNumber, attrProductID, attrCorkBatchNumber, attrCorkProductID, oProduceEvent, oFinalPayload, CORK);
+
+        addReceiveEvent(attrBatchNumber, attrProductID, attrBottleBatchNumber, attrBottleProductID, oFinalPayload, BOTTLE);
+        addComponent(attrBatchNumber, attrProductID, attrBottleBatchNumber, attrBottleProductID, oProduceEvent, oFinalPayload, BOTTLE);
+
+    });
+    
+    postMTPayload(oFinalPayload);
+}
+
+//====================================================================================================
+async function processUploadedDataCork(jsonData) 
+{
+    
+    let oFinalPayload = new finalPayload();
+
+    jsonData.forEach(rec => {
         
-        if(oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.produceEvents.length > 0)
+        let attrProductID       = getAttribute(rec, "Product_ID" , true , "" ); 
+        let attrBatchNumber     = getAttribute(rec, "Cork_Batch_No" , true, "" ); 
+        let attrProductName     = getAttribute(rec, "Product_Name" , false, "" );
+        let attrProductType     = getAttribute(rec, "Cork_Type" , false, "" );
+        let attrManufacture     = getAttribute(rec, "Cork_Manufacture" , true, "" );
+
+/*
+        let error = doValidation(attrSerialNumber,
+                                 attrBatchNumber,
+                                 attrBatchManaged,
+                                 attrManufacturer,
+                                 attrAAS,
+                                 attrMQTT);
+        if (error != null)
         {
-            let isProduceExit = false;
-
-            oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.produceEvents.forEach(oProduceEvent => {
-                if(oProduceEvent.productId == attrProductID && oProduceEvent.batchId == attrBatchNumber){
-                    oProduceEvent.components.push(oComponent);
-                    isProduceExit = true;
-                }
-            });
-
-            if(!isProduceExit)
-            {
-                oProduceEvent.components.push(oComponent);
-                oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.produceEvents.push(oProduceEvent);
-            }
-        } else {
-            oProduceEvent.components.push(oComponent);
-            oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.produceEvents.push(oProduceEvent);
+            throw error;
         }
+*/
+        let oProduceEvent = new productEvent(CORK, attrProductID, attrBatchNumber, attrProductName);
+        oProduceEvent.properties[0].value = attrProductType;
+        oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.produceEvents.push(oProduceEvent);
+
+        let oDeliverEvent = new deliverEvent(CORK, attrProductID, attrBatchNumber);
+        oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.deliverEvents.push(oDeliverEvent);
+    });
+    
+    postMTPayload(oFinalPayload);
+}
+
+//====================================================================================================
+async function processUploadedDataBottle(jsonData) 
+{
+    
+    let oFinalPayload = new finalPayload();
+
+    jsonData.forEach(rec => {
         
+        let attrProductID       = getAttribute(rec, "Product_ID" , true , "" ); 
+        let attrBatchNumber     = getAttribute(rec, "Bottle_Batch_No" , true, "" ); 
+        let attrProductName     = getAttribute(rec, "Product_Name" , false, "" );
+        let attrProductType     = getAttribute(rec, "Bottle_Type" , false, "" );
+        let attrManufacture     = getAttribute(rec, "Bottle_Manufacture" , true, "" );
+
+/*
+        let error = doValidation(attrSerialNumber,
+                                 attrBatchNumber,Bottle_Manufacture
+                                 attrBatchManaged,
+                                 attrManufacturer,
+                                 attrAAS,
+                                 attrMQTT);
+        if (error != null)
+        {
+            throw error;
+        }
+*/
+        let oProduceEvent = new productEvent(BOTTLE, attrProductID, attrBatchNumber, attrProductName);
+        oProduceEvent.properties[0].value = attrProductType;
+        oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.produceEvents.push(oProduceEvent);
+
+        let oDeliverEvent = new deliverEvent(BOTTLE, attrProductID, attrBatchNumber);
+        oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.deliverEvents.push(oDeliverEvent);
     });
     
     postMTPayload(oFinalPayload);
@@ -392,9 +413,116 @@ function retrieveAttributeData(excelRec, excelAttrName, attrValue, masterDataRec
         }
     }
 }
-
 //====================================================================================================
-function getCurrentDate() {
+function addComponent(sBatchNumber, sProductID, sComponentBatchNumber, sComponentProductId, oProduceEvent, oFinalPayload, product) 
+{
+    let oComponent = new component(product);
+    if(product == CORK || product == BOTTLE)
+    {
+        oComponent.batchId = "R-" + sComponentBatchNumber;
+    }
+    else
+    {
+        oComponent.batchId = sComponentBatchNumber;
+    }
+    oComponent.productId = sComponentProductId;
+    
+    if(oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.produceEvents.length > 0)
+    {
+        let isProduceExit = false;
+        let isComponentExist = false;
+
+        for(var i=0; i < oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.produceEvents.length; i++)
+        {
+            let loProduceEvent = oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.produceEvents[i];
+            if(loProduceEvent.productId == sProductID && loProduceEvent.batchId == sBatchNumber)
+            {
+                for(var j=0; j < loProduceEvent.components.length; j++)
+                {
+                    let loComponent = loProduceEvent.components[j];
+                    if(loComponent.productId == sComponentProductId && loComponent.batchId == oComponent.batchId ){
+                        isComponentExist = true;
+                        break
+                    }
+                }
+                if(isComponentExist)
+                {
+                    break;
+                }
+                else
+                {
+                    loProduceEvent.components.push(oComponent);
+                    isProduceExit = true;
+                    break;
+                }
+            }
+        }
+        
+        if(!isProduceExit && !isComponentExist)
+        {
+            oProduceEvent.components.push(oComponent);
+            oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.produceEvents.push(oProduceEvent);
+        }
+    } 
+    else 
+    {
+        oProduceEvent.components.push(oComponent);
+        oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.produceEvents.push(oProduceEvent);
+    }
+}
+//====================================================================================================
+function addReceiveEvent(sBatchNumber, sProductID, sVendorBatchNumber, sVendorProductID, oFinalPayload, product)
+{
+    let oDeliveryItem = new deliveryItem(product, sVendorBatchNumber);
+    let oReceiveEvent = new receiveEvent(product, sVendorProductID, sVendorBatchNumber);
+    let sReceiveBatchNumber = "R-"+ sVendorBatchNumber;
+
+    if(oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.receiveEvents.length > 0)
+    {
+        let isReceiveExit = false;
+        let isDeliveryItemExist = false;
+
+        for(var i=0; i < oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.receiveEvents.length; i++)
+        {
+            let loReceiveEvent = oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.receiveEvents[i];
+           
+            if(loReceiveEvent.productId == sVendorProductID && loReceiveEvent.batchId == sReceiveBatchNumber)
+            {
+                for(var j=0; j < loReceiveEvent.deliveryItemKeys.length; j++)
+                {
+                    let loDeliveryItem = loReceiveEvent.deliveryItemKeys[j];
+                    if(loDeliveryItem.vendorBatchId == sVendorBatchNumber){
+                        isDeliveryItemExist = true;
+                        break
+                    }
+                }
+                if(isDeliveryItemExist)
+                {
+                    break;
+                }
+                else
+                {
+                    loReceiveEvent.deliveryItemKeys.push(oDeliveryItem);
+                    isReceiveExit = true;
+                    break;
+                }
+            }
+        };
+        if(!isReceiveExit && !isDeliveryItemExist)
+        {
+            oReceiveEvent.deliveryItemKeys.push(oDeliveryItem);
+            oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.receiveEvents.push(oReceiveEvent);
+        }
+    } 
+    else 
+    {
+        oReceiveEvent.deliveryItemKeys.push(oDeliveryItem);
+        oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.receiveEvents.push(oReceiveEvent);
+    }
+}
+//====================================================================================================
+function getCurrentDate() 
+{
     const d = new Date();
     let day = d.getDate().toString();
     let month = (d.getMonth() +1).toString();
@@ -403,7 +531,9 @@ function getCurrentDate() {
     return date
 }
 
-function getDate(sInDate) {
+//====================================================================================================
+function getDate(sInDate) 
+{
     let sYear = sInDate.substr(6, 4).toString();
     let sMonth = sInDate.substr(3, 2).toString();
     let sDay = sInDate.substr(0, 2).toString();
@@ -411,7 +541,9 @@ function getDate(sInDate) {
     return sDate
 }
 
-function getSenderLBNId() {
+//====================================================================================================
+function getSenderLBNId() 
+{
     
     let senderLBNId = process.env.SENDER_LBN_ID;
     if(senderLBNId == null || senderLBNId == ""){
@@ -421,14 +553,15 @@ function getSenderLBNId() {
     }
 }
 
-function finalPayload(){
-
+//====================================================================================================
+function finalPayload()
+{
     let oFinalPayloadJason = require('../payload_json/final-payload.json');
     var oFinalPayload = JSON.parse(JSON.stringify(oFinalPayloadJason));
 
     oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.receiveEvents = [];
     oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.produceEvents = [];
-    oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.DeliverEvent = [];
+    oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.deliverEvents = [];
     
     let sSenderLbnId = getSenderLBNId();
     oFinalPayload.PostMaterialTraceabilityEventNotification.senderLbnId = sSenderLbnId;
@@ -437,62 +570,163 @@ function finalPayload(){
     return oFinalPayload;
 }
 
-function getCompanyName(){
+//====================================================================================================
+function getCompanyName()
+{
     let sCompanyName = process.env.COMPANY_NAME;
     return sCompanyName;
 }
 
-function productEvent(product)
+//====================================================================================================
+function productEvent(product, sProductID, sBatchNumber, sProductName)
 {
     let produceEventJson;
     let oProduceEvent;
 
-    if(product == "Grape")
+    if(product == GRAPE)
     {
         produceEventJson = require('../payload_json/product-event-grape.json');     
     } 
-    else if (product == "Wine") 
+    else if (product == WINE) 
     {
         produceEventJson = require('../payload_json/product-event-wine.json');
     } 
-    else if (product == "Final Bottle") 
+    else if (product == FINALBOTTLE) 
     {
         produceEventJson = require('../payload_json/product-event-final-bottle.json');
     } 
-    else if (product == "Cork") 
+    else if (product == CORK) 
     {
-
-    } else if (product == "Bottle") 
+        produceEventJson = require('../payload_json/product-event-cork.json');
+    } 
+    else if (product == BOTTLE) 
     {
-
+        produceEventJson = require('../payload_json/product-event-bottle.json');
     } else {
         //error
         console.log("error");
     }
     oProduceEvent = JSON.parse(JSON.stringify(produceEventJson));
+    oProduceEvent.productId = sProductID;
+    oProduceEvent.creationDate = getCurrentDate();
+    oProduceEvent.batchId = sBatchNumber;
+    oProduceEvent.productName = sProductName;
     return oProduceEvent;
 }
-
-function component(){
-    let componentJson= require('../payload_json/component.json')
+//====================================================================================================
+function component(product)
+{
+    let componentJson;
+    if(product == GRAPE)
+    {
+        componentJson = require('../payload_json/component-grape.json');
+    }
+    else if(product == WINE)
+    {
+        componentJson = require('../payload_json/component-wine.json');
+    }
+    else if(product == CORK)
+    {
+        componentJson = require('../payload_json/component-cork.json');
+    }else if(product == BOTTLE)
+    {
+        componentJson = require('../payload_json/component-bottle.json');
+    }
+    else {
+        console.log("compoenet not found");
+//        throw error;
+    }
+    
     let oComponent = JSON.parse(JSON.stringify(componentJson));
+    
     return oComponent;
 }
 //====================================================================================================
-async function postMTPayload(finalPayload) {
+function receiveEvent(product, sProductID, sBatchNumber)
+{
+    let receiveEventJson;
+    let oReceiveEvent;
 
+    if (product == CORK) 
+    {
+        receiveEventJson = require('../payload_json/receive-event-cork.json');
+    } 
+    else if (product == BOTTLE) 
+    {
+        receiveEventJson = require('../payload_json/receive-event-bottle.json');
+    } else {
+        //error
+        console.log("error");
+    }
+    oReceiveEvent = JSON.parse(JSON.stringify(receiveEventJson));
+
+    oReceiveEvent.productId = sProductID;
+    oReceiveEvent.batchId = "R-" + sBatchNumber;
+    oReceiveEvent.productName = ""; //????
+    oReceiveEvent.creationDate = getCurrentDate();
+
+    return oReceiveEvent;
+}
+//====================================================================================================
+function deliveryItem(product, sVendorBatchNumber)
+{
+    let deliveryItemJson;
+    let oDeliveryItem;
+
+    if (product == CORK) 
+    {
+        deliveryItemJson = require('../payload_json/deliveryItem-cork.json');
+    } 
+    else if (product == BOTTLE) 
+    {
+        deliveryItemJson = require('../payload_json/deliveryItem-bottle.json');
+    } else {
+        //error
+        console.log("error");
+    }
+    oDeliveryItem = JSON.parse(JSON.stringify(deliveryItemJson));
+    oDeliveryItem.vendorDeliveryId = "D-" + sVendorBatchNumber;
+    oDeliveryItem.vendorBatchId = sVendorBatchNumber;
+
+    return oDeliveryItem;
+}
+//====================================================================================================
+function deliverEvent(product, sProductID, sBatchNumber)
+{
+    let deliverEventJson;
+    let oDeliverEvent;
+
+    if (product == CORK) 
+    {
+        deliverEventJson = require('../payload_json/deliver-event-cork.json');
+    } 
+    else if (product == BOTTLE) 
+    {
+        deliverEventJson = require('../payload_json/deliver-event-bottle.json');
+    } else {
+        //error
+        console.log("error");
+    }
+    oDeliverEvent = JSON.parse(JSON.stringify(deliverEventJson));
+    oDeliverEvent.vendorDeliveryId = "D-" + sBatchNumber;
+    oDeliverEvent.vendorBatchId = sBatchNumber;
+    oDeliverEvent.productId = sProductID;
+    return oDeliverEvent;
+}
+
+//====================================================================================================
+async function postMTPayload(finalPayload) 
+{
     const eventDataApi = require("./../generated/MaterialTraceabilityEventNotification_Provider/event-data-api");
 
     console.log("========================");  
     console.log(JSON.stringify(finalPayload));  
     console.log("========================");  
 
-    try{
-//debugger
+    try
+    {
         const responseData = await eventDataApi.EventDataApi.create(finalPayload).execute({ destinationName: 'DEST-MT-V2' });
-
     } catch (err) {
-
         console.log(err.stack);
         res.status(500).json(err.message);
     }

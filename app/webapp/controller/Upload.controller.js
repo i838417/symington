@@ -12,8 +12,10 @@ sap.ui.define([
         "use strict";
 
         return BaseController.extend("myapp.controller.Upload", {
-            onInit: function()
+            onInit: async function()
             {
+                let sCompanyName = await APIHelper.getCompanyName().ResultData;
+                this.getView().byId("product").setVisible((sCompanyName == "Amorim" || sCompanyName == "BA Glass") ? false : true );
             },
 
             onPressUpload: async function(event)

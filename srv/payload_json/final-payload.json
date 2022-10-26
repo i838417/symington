@@ -6,7 +6,7 @@
         "eventPackage": {
 			"receiveEvents": [],
             "produceEvents": [],
-            "DeliverEvent": []
+            "deliverEvents": []
         }
     }
 }
