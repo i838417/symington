@@ -9,6 +9,58 @@
         {
             "name": "BOTTLING_DATE",
             "value": ""
+        },
+        {
+            "name": "BOTTLING_SITE",
+            "value": ""
+        },
+        {
+            "name": "TOTAL_QUANTITY_PRODUCED_FIN_BOTTLE",
+            "value": ""
+        },
+        {
+            "name": "GEOLOCATION",
+            "value": ""
+        },
+        {
+            "name": "ELECTRICITY_CONSUMPTION",
+            "value": ""
+        },
+        {
+            "name": "PROPANE_GAS_LPG",
+            "value": ""
+        },
+        {
+            "name": "NATURAL_GAS",
+            "value": ""
+        },
+        {
+            "name": "DIESEL_STATIONARY_COMBUSTION",
+            "value": ""
+        },
+        {
+            "name": "WATER_CONSUMPTION_BOTTLING",
+            "value": ""
+        },
+        {
+            "name": "CO2_EMISSIONS_BOTTLING",
+            "value": ""
+        },
+        {
+            "name": "CERTIFICATION_A",
+            "value": ""
+        },
+        {
+            "name": "CERTIFICATION_B",
+            "value": ""
+        },
+        {
+            "name": "FERMENTATION_BY_INDIGENEOUS_YEASTS_FB",
+            "value": ""
+        },
+        {
+            "name": "GMO_PRODUCTS_USED_FB",
+            "value": ""
         }
     ],
     "creationDate": "",

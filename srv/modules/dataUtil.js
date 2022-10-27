@@ -141,31 +141,44 @@ async function doDownloadXLSX(app, req, res)
 //====================================================================================================
 //  ----- HELPER FUNCTIONS -----
 //====================================================================================================
-function processUploadedData(jsonData, company_name, product) 
+async function processUploadedData(jsonData, company_name, product) 
 {
-    if(company_name === SYMINGTON){
-
-        if(product === GRAPE) { 
-            processUploadedDataGrape(jsonData);
-        } else if(product === WINE) {
-            processUploadedDataWine(jsonData);
-        } else if(product === FINALBOTTLE) {
-            processUploadedDataFinalBottle(jsonData);
-        } else {
+    let aMasterData = getMasterData(company_name, product);
+    if(company_name === SYMINGTON)
+    {
+        if(product === GRAPE)
+        { 
+            processUploadedDataGrape(jsonData, aMasterData, company_name, product);
+        } 
+        else if(product === WINE) 
+        {
+            processUploadedDataWine(jsonData, aMasterData, company_name, product);
+        } 
+        else if(product === FINALBOTTLE) 
+        {
+            processUploadedDataFinalBottle(jsonData, aMasterData, company_name, product);
+        } 
+        else 
+        {
             //to-do: raise error 
         }
-    } else if(company_name === AMORIM) {
-        processUploadedDataCork(jsonData);
-    } else if(company_name === BAGLASS) {
-        processUploadedDataBottle(jsonData);
-    } else {
+    } 
+    else if(company_name === AMORIM) 
+    {
+        processUploadedDataCork(jsonData, aMasterData, company_name, product);
+    } 
+    else if(company_name === BAGLASS) 
+    {
+        processUploadedDataBottle(jsonData, aMasterData, company_name, product);
+    } 
+    else 
+    {
         //to-do: raise error 
     }
-
 }
 
 //====================================================================================================
-async function processUploadedDataGrape(jsonData) 
+async function processUploadedDataGrape(jsonData, aMasterData, company_name, product) 
 {   
     let oFinalPayload = new finalPayload();
 
@@ -190,9 +203,31 @@ async function processUploadedDataGrape(jsonData)
             throw error;
         }
 */
-        let oProduceEvent = new productEvent(GRAPE, attrProductID, attrBatchNumber, attrProductName);
+        let oMasterDate = retrieveMasterData(aMasterData, attrVineyardFarm, company_name, product);
+
+        let oProduceEvent = new productEvent(GRAPE, attrProductID, attrBatchNumber, attrProductName);       
         oProduceEvent.properties[0].value = attrProductType;
         oProduceEvent.properties[1].value = getDate(attrHarvestDate);
+        
+        oProduceEvent.properties[2].value = oMasterDate.VINEYARD;
+        oProduceEvent.properties[3].value = oMasterDate.GEOLOCATION_DATA;
+        oProduceEvent.properties[4].value = oMasterDate.TOTAL_QUANTITY_PRODUCED_GRAPE;
+        oProduceEvent.properties[5].value = oMasterDate.ELECTRICITY;
+        oProduceEvent.properties[6].value = oMasterDate.DIESEL_AGRICULTURAL_MACHINERY;
+        oProduceEvent.properties[7].value = oMasterDate.GASOLINE_AGRICULTURAL_MACHINERY;
+        oProduceEvent.properties[8].value = oMasterDate.CO2_EMISSIONS_ENERGY;;
+        oProduceEvent.properties[9].value = oMasterDate.CO2_EMISSIONS_PHYTOSANITARY;
+        oProduceEvent.properties[10].value = oMasterDate.IRRIGATION_WATER_CONSUMPTION;
+        oProduceEvent.properties[11].value = oMasterDate.CO2_EMISSIONS_GRAPE_TRANSPORT;
+        oProduceEvent.properties[12].value = oMasterDate.USAGE_OF_COVER_CROPS;
+        oProduceEvent.properties[13].value = oMasterDate.BIRD_POPULATION_BIODIVERSITY_PRT;
+        oProduceEvent.properties[14].value = oMasterDate.RENEWABLE_ENERGY;
+        oProduceEvent.properties[15].value = oMasterDate.REUSED_WATER_BY_APPLYING_TO_VINEYARDS;
+        oProduceEvent.properties[16].value = oMasterDate.DRIP_IRRIGATION_SYSTEM;
+        oProduceEvent.properties[17].value = oMasterDate.ADDED_ORGANIC_MANURE;
+
+        oProduceEvent.location = oMasterDate.LOCATION;
+
         oProduceEvent.quantities[0].value = attrWeight;
         
         oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.produceEvents.push(oProduceEvent);
@@ -203,7 +238,7 @@ async function processUploadedDataGrape(jsonData)
 }
 
 //====================================================================================================
-async function processUploadedDataWine(jsonData) 
+async function processUploadedDataWine(jsonData, aMasterData, company_name, product) 
 {
     
     let oFinalPayload = new finalPayload();
@@ -234,6 +269,19 @@ async function processUploadedDataWine(jsonData)
         let oProduceEvent = new productEvent(WINE, attrProductID, attrBatchNumber, attrProductName);
         oProduceEvent.properties[0].value = getDate(attrStartFermentation);
         oProduceEvent.properties[1].value = getDate(attrEndFermentation);
+
+        let oMasterDate = retrieveMasterData(aMasterData, attrWinery, company_name, product);
+        oProduceEvent.properties[2].value = oMasterDate.WINERY;
+        oProduceEvent.properties[3].value = oMasterDate.TOTAL_QUANTITY_PRODUCED_WINE;
+        oProduceEvent.properties[4].value = oMasterDate.ELECTRICITY_CONSUMPTION;
+        oProduceEvent.properties[5].value = oMasterDate.RENEWABLE_ENERGY;
+        oProduceEvent.properties[6].value = oMasterDate.PROPANE_GAS_LPG;
+        oProduceEvent.properties[7].value = oMasterDate.DIESEL_STATIONARY_COMBUSTION;
+        oProduceEvent.properties[8].value = oMasterDate.WATER_CONSUMPTION;
+        oProduceEvent.properties[9].value = oMasterDate.CO2_EMISSIONS_WINE_PRODUCTION;
+        oProduceEvent.properties[10].value = oMasterDate.FERMENTATION_BY_INDIGENEOUS_YEASTS_WINE;
+        oProduceEvent.properties[11].value = oMasterDate.GMO_PRODUCTS_USED_WINE;
+
         oProduceEvent.quantities[0].value = attrQuantity;
 
         addComponent(attrBatchNumber, attrProductID, attrGrapeBatchNumber, attrGrapeProductID, oProduceEvent, oFinalPayload, GRAPE);
@@ -244,7 +292,7 @@ async function processUploadedDataWine(jsonData)
 }
 
 //====================================================================================================
-async function processUploadedDataFinalBottle(jsonData) 
+async function processUploadedDataFinalBottle(jsonData, aMasterData, company_name, product) 
 {
     let oFinalPayload = new finalPayload();
 
@@ -281,6 +329,21 @@ async function processUploadedDataFinalBottle(jsonData)
         oProduceEvent.properties[0].value = attrBottlesInBatch;
         oProduceEvent.properties[1].value = getDate(attrBottlingDate);
 
+        let oMasterDate = retrieveMasterData(aMasterData, attrBottelery, company_name, product);
+        oProduceEvent.properties[2].value = oMasterDate.BOTTLING_SITE;
+        oProduceEvent.properties[3].value = oMasterDate.TOTAL_QUANTITY_PRODUCED_FIN_BOTTLE;
+        oProduceEvent.properties[4].value = oMasterDate.GEOLOCATION;
+        oProduceEvent.properties[5].value = oMasterDate.ELECTRICITY_CONSUMPTION;
+        oProduceEvent.properties[6].value = oMasterDate.PROPANE_GAS_LPG;
+        oProduceEvent.properties[7].value = oMasterDate.NATURAL_GAS;
+        oProduceEvent.properties[8].value = oMasterDate.DIESEL_STATIONARY_COMBUSTION;
+        oProduceEvent.properties[9].value = oMasterDate.WATER_CONSUMPTION_BOTTLING;
+        oProduceEvent.properties[10].value = oMasterDate.CO2_EMISSIONS_BOTTLING;
+        oProduceEvent.properties[11].value = oMasterDate.CERTIFICATION_A;
+        oProduceEvent.properties[12].value = oMasterDate.CERTIFICATION_B;
+        oProduceEvent.properties[13].value = oMasterDate.FERMENTATION_BY_INDIGENEOUS_YEASTS_FB;
+        oProduceEvent.properties[14].value = oMasterDate.GMO_PRODUCTS_USED_FB;
+
         addComponent(attrBatchNumber, attrProductID, attrWineBatchNumber, attrWineProductID, oProduceEvent, oFinalPayload, WINE);
 
         addReceiveEvent(attrBatchNumber, attrProductID, attrCorkBatchNumber, attrCorkProductID, oFinalPayload, CORK);
@@ -295,7 +358,7 @@ async function processUploadedDataFinalBottle(jsonData)
 }
 
 //====================================================================================================
-async function processUploadedDataCork(jsonData) 
+async function processUploadedDataCork(jsonData, aMasterData, company_name, product) 
 {
     
     let oFinalPayload = new finalPayload();
@@ -332,7 +395,7 @@ async function processUploadedDataCork(jsonData)
 }
 
 //====================================================================================================
-async function processUploadedDataBottle(jsonData) 
+async function processUploadedDataBottle(jsonData, aMasterData, company_name, product) 
 {
     
     let oFinalPayload = new finalPayload();
@@ -713,7 +776,82 @@ function deliverEvent(product, sProductID, sBatchNumber)
     oDeliverEvent.productId = sProductID;
     return oDeliverEvent;
 }
-
+//====================================================================================================
+function getMasterData(company_name, product)
+{
+    let oMasterData = null;
+    if(company_name === SYMINGTON)
+    {
+        if(product === GRAPE)
+        { 
+            oMasterData = process.env.GRAPE_MASTER_DATA;
+        } 
+        else if(product === WINE) 
+        {
+            oMasterData = process.env.WINE_MASTER_DATA;
+        } 
+        else if(product === FINALBOTTLE) 
+        {
+            oMasterData = process.env.FINAL_BOTTLE_MASTER_DATA;
+        } 
+        else 
+        {
+            //to-do: raise error 
+        }
+    } 
+    else if(company_name === AMORIM) 
+    {
+        oMasterData = process.env.CORK_MASTER_DATA;
+    } 
+    else if(company_name === BAGLASS) 
+    {
+        oMasterData = process.env.BOTTLE_MASTER_DATA;
+    } 
+    else 
+    {
+        //to-do: raise error 
+    }
+    return oMasterData;
+}
+//====================================================================================================
+function retrieveMasterData(aMasterData, sMasterDataKey, company_name, product)
+{
+    try
+    {
+        let aMasterDataJason = JSON.parse(aMasterData);
+        let oMasterData;          
+        if(company_name === SYMINGTON)
+        {
+            if(product === GRAPE)
+            { 
+                oMasterData = aMasterDataJason.find(item => item.VINEYARD === sMasterDataKey);
+            } 
+            else if(product === WINE) 
+            {
+                oMasterData = aMasterDataJason.find(item => item.WINERY === sMasterDataKey);
+            } 
+            else if(product === FINALBOTTLE) 
+            {
+                oMasterData = aMasterDataJason.find(item => item.BOTTLING_SITE === sMasterDataKey);
+            } 
+        } 
+        else if(company_name === AMORIM) 
+        {
+            //TO-DO: change VINEYARD
+            oMasterData = aMasterDataJason.find(item => item.VINEYARD === sMasterDataKey);
+        } 
+        else if(company_name === BAGLASS) 
+        {
+            //TO-DO: change VINEYARD
+            oMasterData = aMasterDataJason.find(item => item.VINEYARD === sMasterDataKey);
+        }     
+        return oMasterData;
+    }
+    catch (err)
+    {
+        throw new Error("Could not find master data for '" + sMasterDataKey + "'");
+    }
+}
 //====================================================================================================
 async function postMTPayload(finalPayload) 
 {

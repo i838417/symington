@@ -9,6 +9,70 @@
         {
             "name": "HARVEST_DATE",
             "value": ""
+        },
+        {
+          "name": "VINEYARD",
+          "value": ""
+        },
+        {
+          "name": "GEOLOCATION_DATA",
+          "value": ""
+        },
+        {
+          "name": "TOTAL_QUANTITY_PRODUCED_GRAPE",
+          "value": ""
+        },
+        {
+          "name": "ELECTRICITY",
+          "value": ""
+        },
+        {
+          "name": "DIESEL_AGRICULTURAL_MACHINERY",
+          "value": ""
+        },
+        {
+          "name": "GASOLINE_AGRICULTURAL_MACHINERY",
+          "value": ""
+        },
+        {
+          "name": "CO2_EMISSIONS_ENERGY",
+          "value": ""
+        },
+        {
+          "name": "CO2_EMISSIONS_PHYTOSANITARY",
+          "value": ""
+        },
+        {
+          "name": "IRRIGATION_WATER_CONSUMPTION",
+          "value": ""
+        },
+        {
+          "name": "CO2_EMISSIONS_GRAPE_TRANSPORT",
+          "value": ""
+        },
+        {
+          "name": "USAGE_OF_COVER_CROPS",
+          "value": ""
+        },
+        {
+          "name": "BIRD_POPULATION_BIODIVERSITY_PRT",
+          "value": ""
+        },
+        {
+          "name": "RENEWABLE_ENERGY",
+          "value": ""
+        },
+        {
+          "name": "REUSED_WATER_BY_APPLYING_TO_VINEYARDS",
+          "value": ""
+        },
+        {
+          "name": "DRIP_IRRIGATION_SYSTEM",
+          "value": ""
+        },
+        {
+          "name": "ADDED_ORGANIC_MANURE",
+          "value": ""
         }
     ],
     "creationDate": "",

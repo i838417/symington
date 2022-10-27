@@ -9,6 +9,46 @@
         {
             "name": "END_FERMENTATION",
             "value": ""
+        },
+        {
+            "name": "WINERY",
+            "value": ""
+        },
+        {
+            "name": "TOTAL_QUANTITY_PRODUCED_WINE",
+            "value": ""
+        },
+        {
+            "name": "ELECTRICITY_CONSUMPTION",
+            "value": ""
+        },
+        {
+            "name": "RENEWABLE_ENERGY",
+            "value": ""
+        },
+        {
+            "name": "PROPANE_GAS_LPG",
+            "value": ""
+        },
+        {
+            "name": "DIESEL_STATIONARY_COMBUSTION",
+            "value": ""
+        },
+        {
+            "name": "WATER_CONSUMPTION",
+            "value": ""
+        },
+        {
+            "name": "CO2_EMISSIONS_WINE_PRODUCTION",
+            "value": ""
+        },
+        {
+            "name": "FERMENTATION_BY_INDIGENEOUS_YEASTS_WINE",
+            "value": ""
+        },
+        {
+            "name": "GMO_PRODUCTS_USED_WINE",
+            "value": ""
         }
     ],
     "creationDate": "",
