@@ -346,10 +346,10 @@ async function processUploadedDataFinalBottle(jsonData, aMasterData, company_nam
 
         addComponent(attrBatchNumber, attrProductID, attrWineBatchNumber, attrWineProductID, oProduceEvent, oFinalPayload, WINE);
 
-        addReceiveEvent(attrBatchNumber, attrProductID, attrCorkBatchNumber, attrCorkProductID, oFinalPayload, CORK);
+        addReceiveEvent(attrCorkBatchNumber, attrCorkProductID, oFinalPayload, CORK);
         addComponent(attrBatchNumber, attrProductID, attrCorkBatchNumber, attrCorkProductID, oProduceEvent, oFinalPayload, CORK);
 
-        addReceiveEvent(attrBatchNumber, attrProductID, attrBottleBatchNumber, attrBottleProductID, oFinalPayload, BOTTLE);
+        addReceiveEvent(attrBottleBatchNumber, attrBottleProductID, oFinalPayload, BOTTLE);
         addComponent(attrBatchNumber, attrProductID, attrBottleBatchNumber, attrBottleProductID, oProduceEvent, oFinalPayload, BOTTLE);
 
     });
@@ -534,7 +534,7 @@ function addComponent(sBatchNumber, sProductID, sComponentBatchNumber, sComponen
     }
 }
 //====================================================================================================
-function addReceiveEvent(sBatchNumber, sProductID, sVendorBatchNumber, sVendorProductID, oFinalPayload, product)
+function addReceiveEvent(sVendorBatchNumber, sVendorProductID, oFinalPayload, product)
 {
     let oDeliveryItem = new deliveryItem(product, sVendorBatchNumber);
     let oReceiveEvent = new receiveEvent(product, sVendorProductID, sVendorBatchNumber);
@@ -725,7 +725,7 @@ function receiveEvent(product, sProductID, sBatchNumber)
 
     oReceiveEvent.productId = sProductID;
     oReceiveEvent.batchId = "R-" + sBatchNumber;
-    oReceiveEvent.productName = ""; //????
+    oReceiveEvent.productName = retrieveProductName(product, sProductID);
     oReceiveEvent.creationDate = getCurrentDate();
 
     return oReceiveEvent;
@@ -850,6 +850,31 @@ function retrieveMasterData(aMasterData, sMasterDataKey, company_name, product)
     catch (err)
     {
         throw new Error("Could not find master data for '" + sMasterDataKey + "'");
+    }
+}
+//====================================================================================================
+function retrieveProductName(product, sProductID)
+{
+    let sProductIDName;
+    try
+    {
+        if(product === CORK)
+        { 
+            sProductIDName = process.env.CORK_PRODUCT_ID_NAME;
+            
+        } 
+        else if(product === BOTTLE) 
+        {
+            sProductIDName = process.env.BOTTLE_PRODUCT_ID_NAME;
+        } 
+        let aProductIDName = JSON.parse(sProductIDName);
+        let oProductIDName = aProductIDName.find(item => item.PRODUCT_ID === sProductID);
+
+        return oProductIDName.PRODUCT_NAME;
+    }
+    catch (err)
+    {
+        throw new Error("Could not find Product Name master data for Product ID '" + sProductID + "'");
     }
 }
 //====================================================================================================
