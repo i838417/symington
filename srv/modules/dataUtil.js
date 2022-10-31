@@ -74,16 +74,14 @@ async function doUpload(app, req, res)
 
             }
             //logger.debug("file jsonObj >>> ", JSON.stringify(jsonObj));
-
             processUploadedData(jsonObj, sCompany, sProduct);
             res.status(200).send({message: "Upload successful"});
             return;
-            
         } 
         catch (err) 
         {
             logger.debug(`err >>> ${err.message}`);
-            res.status(500).send({ message: err.message });
+            res.status(500).send(err.message);
         }
     });
     
@@ -141,7 +139,7 @@ async function doDownloadXLSX(app, req, res)
 //====================================================================================================
 //  ----- HELPER FUNCTIONS -----
 //====================================================================================================
-async function processUploadedData(jsonData, company_name, product) 
+function processUploadedData(jsonData, company_name, product) 
 {
     let aMasterData = getMasterData(company_name, product);
     if(company_name === SYMINGTON)
@@ -178,7 +176,7 @@ async function processUploadedData(jsonData, company_name, product)
 }
 
 //====================================================================================================
-async function processUploadedDataGrape(jsonData, aMasterData, company_name, product) 
+function processUploadedDataGrape(jsonData, aMasterData, company_name, product) 
 {   
     let oFinalPayload = new finalPayload();
 
@@ -191,18 +189,18 @@ async function processUploadedDataGrape(jsonData, aMasterData, company_name, pro
         let attrVineyardFarm    = getAttribute(rec, "Vineyard_Farm"  , true , "" ); 
         let attrBatchNumber     = getAttribute(rec, "Grape_Batch_No" , true, "" ); 
         let attrProductName     = getAttribute(rec, "Product_Name" , false, "" ); 
-/*
-        let error = doValidation(attrSerialNumber,
-                                 attrBatchNumber,
-                                 attrBatchManaged,
-                                 attrManufacturer,
-                                 attrAAS,
-                                 attrMQTT);
-        if (error != null)
-        {
-            throw error;
-        }
-*/
+
+        doValidationBatchAttributes(attrBatchNumber, 
+                                    attrProductID, 
+                                    null, 
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    null);
+        doValidationGrapeProperties(attrHarvestDate, attrWeight);
+
+
         let oMasterDate = retrieveMasterData(aMasterData, attrVineyardFarm, company_name, product);
 
         let oProduceEvent = new productEvent(GRAPE, attrProductID, attrBatchNumber, attrProductName);       
@@ -238,7 +236,7 @@ async function processUploadedDataGrape(jsonData, aMasterData, company_name, pro
 }
 
 //====================================================================================================
-async function processUploadedDataWine(jsonData, aMasterData, company_name, product) 
+function processUploadedDataWine(jsonData, aMasterData, company_name, product) 
 {
     
     let oFinalPayload = new finalPayload();
@@ -254,18 +252,17 @@ async function processUploadedDataWine(jsonData, aMasterData, company_name, prod
         let attrGrapeBatchNumber     = getAttribute(rec, "Grape_Batch_No" , true, "" );
         let attrGrapeProductID     = getAttribute(rec, "Grape_Product_ID" , true, "" );
         let attrProductName     = getAttribute(rec, "Product_Name" , false, "" ); 
-/*
-        let error = doValidation(attrSerialNumber,
-                                 attrBatchNumber,
-                                 attrBatchManaged,
-                                 attrManufacturer,
-                                 attrAAS,
-                                 attrMQTT);
-        if (error != null)
-        {
-            throw error;
-        }
-*/
+
+        doValidationBatchAttributes(attrBatchNumber, 
+                                    attrProductID, 
+                                    attrGrapeBatchNumber, 
+                                    attrGrapeProductID,
+                                    null,
+                                    null,
+                                    null,
+                                    null);
+        doValidationWineProperties(attrStartFermentation, attrEndFermentation, attrQuantity);
+
         let oProduceEvent = new productEvent(WINE, attrProductID, attrBatchNumber, attrProductName);
         oProduceEvent.properties[0].value = getDate(attrStartFermentation);
         oProduceEvent.properties[1].value = getDate(attrEndFermentation);
@@ -292,7 +289,7 @@ async function processUploadedDataWine(jsonData, aMasterData, company_name, prod
 }
 
 //====================================================================================================
-async function processUploadedDataFinalBottle(jsonData, aMasterData, company_name, product) 
+function processUploadedDataFinalBottle(jsonData, aMasterData, company_name, product) 
 {
     let oFinalPayload = new finalPayload();
 
@@ -313,18 +310,17 @@ async function processUploadedDataFinalBottle(jsonData, aMasterData, company_nam
 
         let attrCorkBatchNumber     = getAttribute(rec, "Cork_Batch_No" , true, "" );
         let attrCorkProductID     = getAttribute(rec, "Cork_Product_ID" , true, "" );
-/*
-        let error = doValidation(attrSerialNumber,
-                                 attrBatchNumber,
-                                 attrBatchManaged,
-                                 attrManufacturer,
-                                 attrAAS,
-                                 attrMQTT);
-        if (error != null)
-        {
-            throw error;
-        }
-*/
+
+        doValidationBatchAttributes(attrBatchNumber, 
+                                    attrProductID, 
+                                    attrWineBatchNumber, 
+                                    attrWineProductID, 
+                                    attrBottleBatchNumber, 
+                                    attrBottleProductID, 
+                                    attrCorkBatchNumber, 
+                                    attrCorkProductID);
+        doValidationFinalBottleProperties(attrBottlingDate, attrBottlesInBatch);
+
         let oProduceEvent = new productEvent(FINALBOTTLE, attrProductID, attrBatchNumber, attrProductName);
         oProduceEvent.properties[0].value = attrBottlesInBatch;
         oProduceEvent.properties[1].value = getDate(attrBottlingDate);
@@ -358,7 +354,7 @@ async function processUploadedDataFinalBottle(jsonData, aMasterData, company_nam
 }
 
 //====================================================================================================
-async function processUploadedDataCork(jsonData, aMasterData, company_name, product) 
+function processUploadedDataCork(jsonData, aMasterData, company_name, product) 
 {
     
     let oFinalPayload = new finalPayload();
@@ -371,18 +367,16 @@ async function processUploadedDataCork(jsonData, aMasterData, company_name, prod
         let attrProductType     = getAttribute(rec, "Cork_Type" , false, "" );
         let attrManufacture     = getAttribute(rec, "Cork_Manufacture" , true, "" );
 
-/*
-        let error = doValidation(attrSerialNumber,
-                                 attrBatchNumber,
-                                 attrBatchManaged,
-                                 attrManufacturer,
-                                 attrAAS,
-                                 attrMQTT);
-        if (error != null)
-        {
-            throw error;
-        }
-*/
+        doValidationBatchAttributes(attrBatchNumber, 
+                                    attrProductID, 
+                                    null, 
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    null);
+       // doValidationCorkProperties();
+
         let oProduceEvent = new productEvent(CORK, attrProductID, attrBatchNumber, attrProductName);
         oProduceEvent.properties[0].value = attrProductType;
         oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.produceEvents.push(oProduceEvent);
@@ -395,7 +389,7 @@ async function processUploadedDataCork(jsonData, aMasterData, company_name, prod
 }
 
 //====================================================================================================
-async function processUploadedDataBottle(jsonData, aMasterData, company_name, product) 
+function processUploadedDataBottle(jsonData, aMasterData, company_name, product) 
 {
     
     let oFinalPayload = new finalPayload();
@@ -408,18 +402,16 @@ async function processUploadedDataBottle(jsonData, aMasterData, company_name, pr
         let attrProductType     = getAttribute(rec, "Bottle_Type" , false, "" );
         let attrManufacture     = getAttribute(rec, "Bottle_Manufacture" , true, "" );
 
-/*
-        let error = doValidation(attrSerialNumber,
-                                 attrBatchNumber,Bottle_Manufacture
-                                 attrBatchManaged,
-                                 attrManufacturer,
-                                 attrAAS,
-                                 attrMQTT);
-        if (error != null)
-        {
-            throw error;
-        }
-*/
+        doValidationBatchAttributes(attrBatchNumber, 
+                                    attrProductID, 
+                                    null, 
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    null);
+        // doValidationBottleProperties();
+
         let oProduceEvent = new productEvent(BOTTLE, attrProductID, attrBatchNumber, attrProductName);
         oProduceEvent.properties[0].value = attrProductType;
         oFinalPayload.PostMaterialTraceabilityEventNotification.eventPackage.produceEvents.push(oProduceEvent);
@@ -436,7 +428,7 @@ function getAttribute(attrs, attrName, isRequired, defaultValue)
 {
     if (isRequired && (attrs[attrName] == undefined || attrs[attrName] == null))
     {
-        throw new Error("Missing column '" + columnName + "'");;
+        throw new Error("Missing column or missing mandatory data: '" + attrName + "'");;
     }
     let attrValue = attrs[attrName];
 
@@ -449,7 +441,7 @@ function getAttribute(attrs, attrName, isRequired, defaultValue)
     {
         if (isRequired && attrValue.trim() == "")
         {
-            throw new Error("Missing mandatory data in column '" + columnName + "'");
+            throw new Error("Missing mandatory data in column '" + attrName + "'");
         }
     }
     return (attrValue == undefined || attrValue == null || attrValue == "") ? defaultValue : attrValue;
@@ -876,6 +868,120 @@ function retrieveProductName(product, sProductID)
     {
         throw new Error("Could not find Product Name master data for Product ID '" + sProductID + "'");
     }
+}
+//====================================================================================================
+function doValidationBatchAttributes(
+    sBatchNumber,
+    sProductID,
+    sBatchNumber1,
+    sProductID1,
+    sBatchNumber2,
+    sProductID2,
+    sBatchNumber3,
+    sProductID3)
+{
+    
+    if (sBatchNumber.length > 28 )
+    {
+        throw new Error("Batch number: '"+ sBatchNumber + "' longer than max length allowed 28 characters");
+    }
+    if (sProductID.length > 40 )
+    {
+        throw new Error("Product ID: '"+ sProductID + "' longer than max length allowed 40 characters");
+    }
+    if (sBatchNumber1 != null && sBatchNumber1.length > 28 )
+    {
+        throw new Error("Batch number: '"+ sBatchNumber1 + "' longer than max length allowed 28 characters");
+    }
+    if (sProductID1 != null && sProductID1.length > 40 )
+    {
+        throw new Error("Product ID: '"+ sProductID1 + "' longer than max length allowed 40 characters");
+    }
+    if (sBatchNumber2 != null && sBatchNumber2.length > 28 )
+    {
+        throw new Error("Batch number: '"+ sBatchNumber2 + "' longer than max length allowed 28 characters");
+    }
+    if (sProductID2 != null && sProductID2.length > 40 )
+    {
+        throw new Error("Product ID: '"+ sProductID2 + "' longer than max length allowed 40 characters");
+    }
+    if (sBatchNumber3 != null &&  sBatchNumber3.length > 28 )
+    {
+        throw new Error("Batch number: '"+ sBatchNumber3 + "' longer than max length allowed 28 characters");
+    }
+    if (sProductID3 != null &&  sProductID3.length > 40 )
+    {
+        throw new Error("Product ID: '"+ sProductID3 + "' longer than max length allowed 40 characters");
+    }
+
+    return null;
+}
+//====================================================================================================
+function doValidationGrapeProperties(attrHarvestDate, attrWeight)
+{
+    if(!validateDate(attrHarvestDate))
+    {
+        throw new Error("Harvest date: '"+ attrHarvestDate + "' is not a correct date");
+    }
+    if(!validateNumber(attrWeight))
+    {
+        throw new Error("Weight: '"+ attrWeight + "' is not a correct number");
+    }
+}
+//====================================================================================================
+function doValidationWineProperties(attrStartFermentation, attrEndFermentation, attrQuantity)
+{
+    if(!validateDate(attrStartFermentation))
+    {
+        throw new Error("Start fermentation date: '"+ attrStartFermentation + "' is not a correct date");
+    }
+    if(!validateDate(attrEndFermentation))
+    {
+        throw new Error("End fermentation date: '"+ attrEndFermentation + "' is not a correct date");
+    }
+    if(!validateNumber(attrQuantity))
+    {
+        throw new Error("Quantity: '"+ attrQuantity + "' is not a correct number");
+    }
+}
+//====================================================================================================
+function doValidationFinalBottleProperties(attrBottlingDate, attrBottlesInBatch)
+{
+    if(!validateDate(attrBottlingDate))
+    {
+        throw new Error("Bottling date: "+ attrBottlingDate + " is not a correct date");
+    }
+    if(!validateNumber(attrBottlesInBatch))
+    {
+        throw new Error("Bottle in batch: "+ attrBottlesInBatch + " is not a correct number");
+    }
+}
+//====================================================================================================
+function validateDate(sDate)
+{
+    if(sDate != null && sDate.length != 10 )
+    {
+        return false;
+    }
+    else {
+        let sYear = sDate.substr(6, 4).toString();
+        let sMonth = sDate.substr(3, 2).toString();
+        let sDay = sDate.substr(0, 2).toString();
+        if(isNaN(sYear) || isNaN(sMonth) || isNaN(sDay))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+//====================================================================================================
+function validateNumber(sNumber)
+{
+    if(sNumber != null && isNaN(sNumber))
+    {
+        return false;
+    }
+    return true;
 }
 //====================================================================================================
 async function postMTPayload(finalPayload) 
