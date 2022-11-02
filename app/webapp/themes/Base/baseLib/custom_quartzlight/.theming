@@ -1,0 +1,92 @@
+{
+	"mVersionDependency": {
+		"Base.baseLib.sap_fiori_3": "11.1.41",
+		"Base.baseLib": "11.1.41",
+		"Base": "11.1.41"
+	},
+	"sEntity": "Theme",
+	"sId": "custom_quartzlight",
+	"sLabel": "Custom Quartz Light",
+	"oExtends": "Base.baseLib.sap_fiori_3",
+	"aFiles": [
+		"base",
+		"preview",
+		"css_variables",
+		"custom"
+	],
+	"sTextDirections": "LTR",
+	"sType": "STANDARD",
+	"sThemability": "PUBLIC",
+	"mData": {
+		"mThemeMasterState": {
+			"mSourceInfo": {
+				"sCreated": "2022-09-29T04:38:11.288Z",
+				"sLastModified": "2022-09-29T04:38:41.511Z",
+				"aVersionHistory": [
+					{
+						"sDate": "2022-09-29T04:38:11.288Z",
+						"mVersion": {
+							"Base": "11.1.41",
+							"UR": "10.30.7.345520.0",
+							"UI5": "1.106.1"
+						}
+					}
+				]
+			},
+			"mBuildInfo": {
+				"sLastBuilt": "2022-09-29T04:38:52.659Z",
+				"mVersion": {
+					"Base": "11.1.41",
+					"UR": "10.30.7.345520.0",
+					"UI5": "1.106.1"
+				}
+			}
+		}
+	},
+	"sReleaseStage": "GENERAL_AVAILABILITY",
+	"sDeploymentType": "MANUAL",
+	"aBadgeParameters": [
+		{
+			"Id": "sapBrandColor",
+			"CssValue": "#0a6ed1",
+			"Label": "Brand Color",
+			"Tags": "Quick,Base,Color"
+		},
+		{
+			"Id": "sapHighlightColor",
+			"CssValue": "#0854a0",
+			"Label": "Highlight Color",
+			"Tags": "Quick,Base,Content,Color"
+		},
+		{
+			"Id": "sapBaseColor",
+			"CssValue": "#fff",
+			"Label": "Base Color",
+			"Tags": "Quick,Base,Color"
+		},
+		{
+			"Id": "sapShellColor",
+			"CssValue": "#354a5f",
+			"Label": "Shell Header Color",
+			"Tags": "Quick,Base,Shell,Color"
+		},
+		{
+			"Id": "sapBackgroundColor",
+			"CssValue": "#f7f7f7",
+			"Label": "Background Color",
+			"Tags": "Quick,Base,Color"
+		},
+		{
+			"Id": "sapTextColor",
+			"CssValue": "#32363a",
+			"Label": "Text Color",
+			"Tags": "Quick,Base,Content,Color,Font"
+		},
+		{
+			"Id": "sapLinkColor",
+			"CssValue": "#0a6ed1",
+			"Label": "Link Color",
+			"Tags": "Quick,Base,Content,Color,Font,Link"
+		}
+	]
+}

@@ -16,6 +16,7 @@ sap.ui.define([
             {
                 let sCompanyName = await APIHelper.getCompanyName().ResultData;
                 this.getView().byId("product").setVisible((sCompanyName == "Amorim" || sCompanyName == "BA Glass") ? false : true );
+                this.getView().byId("product-download").setVisible((sCompanyName == "Amorim" || sCompanyName == "BA Glass") ? false : true );
             },
 
             onPressUpload: async function(event)
@@ -85,13 +86,15 @@ sap.ui.define([
             {
                 let httpRequest = new XMLHttpRequest();
                 httpRequest.responseType = "arraybuffer";
-                httpRequest.open("GET", "/srv/download_xlsx", true);
+                let sProduct = this.getView().byId("product-download").getSelectedItem().getText();
+                let url = "/srv/download_xlsx" + "?product="+sProduct;
+                httpRequest.open("GET", url, true);
                 httpRequest.send();
                 httpRequest.onreadystatechange = function() {
                     if (this.readyState == 4 && this.status == 200)
                     {
                     //  console.log(this.response);
-                        File.save(this.response, "CatenaX_Template", "xlsx", null, null);
+                        File.save(this.response, "MT_Data_Upload_Template", "xlsx", null, null);
                     }
                 };
             },
@@ -106,7 +109,7 @@ sap.ui.define([
                     if (this.readyState == 4 && this.status == 200)
                     {
                     //  console.log(this.response);
-                        File.save(this.response, "CatenaX_Template", "csv", null, null);
+                        File.save(this.response, "MT_Data_Upload_Template", "csv", null, null);
                     }
                 };
             }

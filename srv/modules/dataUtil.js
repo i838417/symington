@@ -103,13 +103,13 @@ async function doUpload(app, req, res)
 //====================================================================================================
 async function doDownloadCSV(app, req, res)
 {
-    if (! req.authInfo.checkScope("$XSAPPNAME.CatenaXUser")) 
+    if (! req.authInfo.checkScope("$XSAPPNAME.MTUploadAppUser")) 
     {
         res.status(401).send({message: "Unauthorized"});
     }
 
     let fileName = "CatenaX_Template.csv";
-    let filePath = PATH.join(__dirname, "../template_files/" + fileName);
+    let filePath = path.join(__dirname, "../template_files/" + fileName);
     res.download(filePath, fileName, function (err) {
         if (err)
         {
@@ -121,13 +121,44 @@ async function doDownloadCSV(app, req, res)
 //====================================================================================================
 async function doDownloadXLSX(app, req, res)
 {
-    if (! req.authInfo.checkScope("$XSAPPNAME.CatenaXUser"))
+    if (! req.authInfo.checkScope("$XSAPPNAME.MTUploadAppUser"))
     {
         res.status(401).send({message: "Unauthorized"});
     }
 
-    let fileName = "CatenaX_Template.xlsx";
-    let filePath = PATH.join(__dirname, "../template_files/" + fileName);
+    let fileName = "";
+    let sProduct = "";
+    if(req.query && req.query.product)
+    {
+        sProduct= req.query.product;
+    }
+    let sCompany = getCompanyName();
+
+    if(sCompany === SYMINGTON)
+    {
+        if(sProduct === GRAPE)
+        { 
+            fileName = "Grape_Template.xlsx";
+        } 
+        else if(sProduct === WINE) 
+        {
+            fileName = "Wine_Template.xlsx";
+        } 
+        else if(sProduct === FINALBOTTLE) 
+        {
+            fileName = "FinalBottle_Template.xlsx";
+        } 
+    } 
+    else if(sCompany === AMORIM) 
+    {
+        fileName = "Cork_Template.xlsx";
+    } 
+    else if(sCompany === BAGLASS) 
+    {
+        fileName = "Bottle_Template.xlsx";
+    } 
+
+    let filePath = path.join(__dirname, "../template_files/" + fileName);
     res.download(filePath, fileName, function (err) {
         if (err)
         {

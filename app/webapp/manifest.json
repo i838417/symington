@@ -15,17 +15,6 @@
             "version": "1.7.1",
             "toolsId": "e3a3adc6-4401-4a4b-b343-a37b538a70be"
         },
-        "dataSources": {
-            "mainService": {
-                "uri": "/sap/opu/odata/",
-                "type": "OData",
-                "settings": {
-                    "annotations": [],
-                    "localUri": "localService/metadata.xml",
-                    "odataVersion": "2.0"
-                }
-            }
-        },
         "crossNavigation": {
             "inbounds": {
                 "com-sap-catenax-dataupload-catenaxdataupload-inbound": {
@@ -89,11 +78,6 @@
                 "settings": {
                     "bundleName": "myapp.i18n.i18n"
                 }
-            },
-            "": {
-                "dataSource": "mainService",
-                "preload": true,
-                "settings": {}
             }
         },
         "resources": {
