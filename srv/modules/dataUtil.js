@@ -274,15 +274,15 @@ function processUploadedDataWine(jsonData, aMasterData, company_name, product)
 
     jsonData.forEach(rec => {
         
-        let attrProductID       = getAttribute(rec, "Product_ID" , true , "" ); 
-        let attrStartFermentation     = getAttribute(rec, "Start_Fermentation", false, "" ); 
+        let attrProductID           = getAttribute(rec, "Product_ID" , true , "" ); 
+        let attrStartFermentation   = getAttribute(rec, "Start_Fermentation", false, "" ); 
         let attrEndFermentation     = getAttribute(rec, "End_Fermentation", false, "" ); 
-        let attrQuantity          = getAttribute(rec, "Quantity" , true, "" ); 
-        let attrWinery    = getAttribute(rec, "Winery"  , true , "" ); 
-        let attrBatchNumber     = getAttribute(rec, "Wine_Batch_No" , true, "" ); 
-        let attrGrapeBatchNumber     = getAttribute(rec, "Grape_Batch_No" , true, "" );
-        let attrGrapeProductID     = getAttribute(rec, "Grape_Product_ID" , true, "" );
-        let attrProductName     = getAttribute(rec, "Product_Name" , false, "" ); 
+        let attrQuantity            = getAttribute(rec, "Quantity" , true, "" ); 
+        let attrWinery              = getAttribute(rec, "Winery"  , true , "" ); 
+        let attrBatchNumber         = getAttribute(rec, "Wine_Batch_No" , true, "" ); 
+        let attrGrapeBatchNumber    = getAttribute(rec, "Grape_Batch_No" , true, "" );
+        let attrGrapeProductID      = getAttribute(rec, "Grape_Product_ID" , true, "" );
+        let attrProductName         = getAttribute(rec, "Product_Name" , false, "" ); 
 
         doValidationBatchAttributes(attrBatchNumber, 
                                     attrProductID, 
@@ -326,21 +326,21 @@ function processUploadedDataFinalBottle(jsonData, aMasterData, company_name, pro
 
     jsonData.forEach(rec => {        
 
-        let attrProductID       = getAttribute(rec, "Product_ID" , true , "" ); 
-        let attrBottlesInBatch     = getAttribute(rec, "Bottles_In_Batch", false, "" ); 
-        let attrBottlingDate     = getAttribute(rec, "Bottling_Date", false, "" ); 
-        let attrBottelery    = getAttribute(rec, "Bottelery"  , true , "" ); 
-        let attrBatchNumber     = getAttribute(rec, "Final_Bottle_Batch_No" , true, "" ); 
-        let attrProductName     = getAttribute(rec, "Product_Name" , false, "" );
+        let attrProductID           = getAttribute(rec, "Product_ID" , true , "" ); 
+        let attrBottlesInBatch      = getAttribute(rec, "Bottles_In_Batch", false, "" ); 
+        let attrBottlingDate        = getAttribute(rec, "Bottling_Date", false, "" ); 
+        let attrBottelery           = getAttribute(rec, "Bottelery"  , true , "" ); 
+        let attrBatchNumber         = getAttribute(rec, "Final_Bottle_Batch_No" , true, "" ); 
+        let attrProductName         = getAttribute(rec, "Product_Name" , false, "" );
 
         let attrWineBatchNumber     = getAttribute(rec, "Wine_Batch_No" , true, "" );
-        let attrWineProductID     = getAttribute(rec, "Wine_Product_ID" , true, "" );
+        let attrWineProductID       = getAttribute(rec, "Wine_Product_ID" , true, "" );
 
-        let attrBottleBatchNumber     = getAttribute(rec, "Bottle_Batch_No" , true, "" );
+        let attrBottleBatchNumber   = getAttribute(rec, "Bottle_Batch_No" , true, "" );
         let attrBottleProductID     = getAttribute(rec, "Bottle_Product_ID" , true, "" );
 
         let attrCorkBatchNumber     = getAttribute(rec, "Cork_Batch_No" , true, "" );
-        let attrCorkProductID     = getAttribute(rec, "Cork_Product_ID" , true, "" );
+        let attrCorkProductID       = getAttribute(rec, "Cork_Product_ID" , true, "" );
 
         doValidationBatchAttributes(attrBatchNumber, 
                                     attrProductID, 
