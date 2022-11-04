@@ -611,9 +611,21 @@ function getCurrentDate()
 {
     const d = new Date();
     let day = d.getDate().toString();
+    if(day.length == 1)
+    {
+        day = "0"+ day;
+    }
     let month = (d.getMonth() +1).toString();
+    if(month.length ==1)
+    {
+        month = "0"+ month;
+    }
     let year = d.getFullYear().toString();
     let date = year + month + day;
+    if(date.length != 8)
+    {
+        throw new Error("Date '" + sProductID + "' is incorrect, should be 'yyyymmdd'");
+    }
     return date
 }
 
